@@ -13,6 +13,7 @@ const { WebpackManifestPlugin } = require('webpack-manifest-plugin')
 
 const {
   ROOT_PATH,
+  STATIC_ASSETS_PATH,
   getBabelLoader,
   getCacheConfig,
   getMonacoWebpackPlugin,
@@ -118,7 +119,7 @@ const config = {
     ...(IS_EMBED_ENTRY_POINT_ENABLED && { embed: path.join(enterpriseDirectory, 'embed', 'main.tsx') }),
   },
   output: {
-    path: path.join(ROOT_PATH, 'ui', 'assets'),
+    path: STATIC_ASSETS_PATH,
     // Do not [hash] for development -- see https://github.com/webpack/webpack-dev-server/issues/377#issuecomment-241258405
     // Note: [name] will vary depending on the Webpack chunk. If specified, it will use a provided chunk name, otherwise it will fallback to a deterministic id.
     filename:
@@ -185,7 +186,7 @@ const config = {
         project: SENTRY_PROJECT,
         authToken: SENTRY_AUTH_TOKEN,
         release: `frontend@${RELEASE_CANDIDATE_VERSION}`,
-        include: path.join(ROOT_PATH, 'ui', 'assets', 'scripts'),
+        include: path.join(STATIC_ASSETS_PATH, 'scripts'),
       }),
   ].filter(Boolean),
   resolve: {
