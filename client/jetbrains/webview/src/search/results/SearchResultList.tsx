@@ -197,6 +197,7 @@ export const SearchResultList: React.FunctionComponent<Props> = ({
                                 match={match}
                                 selectedResult={selectedResultId}
                                 selectResult={selectResult}
+                                lastSyncedTime={match.repoLastFetched}
                             />
                         )
                     default:

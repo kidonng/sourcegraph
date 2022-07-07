@@ -9,6 +9,7 @@ import { Button, Icon } from '@sourcegraph/wildcard'
 import { formatRepositoryStarCount } from '../util/stars'
 
 import { CodeHostIcon } from './CodeHostIcon'
+import { LastSyncedIcon } from './LastSyncedIcon'
 import { SearchResultStar } from './SearchResultStar'
 
 import styles from './ResultContainer.module.scss'
@@ -111,6 +112,8 @@ export interface ResultContainerProps {
 
     as?: React.ElementType
     index: number
+
+    lastSyncedTime?: string
 }
 
 /**
@@ -134,6 +137,7 @@ export const ResultContainer: React.FunctionComponent<React.PropsWithChildren<Re
     onResultClicked,
     className,
     resultType,
+    lastSyncedTime,
     as: Component = 'div',
     index,
 }) => {
@@ -220,6 +224,17 @@ export const ResultContainer: React.FunctionComponent<React.PropsWithChildren<Re
                     )}
                     {matchCountLabel && formattedRepositoryStarCount && (
                         <div className={classNames('mx-2', styles.headerDivider)} />
+                    )}
+                    {lastSyncedTime && (
+                        <span className="d-flex align-items-center">
+                            <LastSyncedIcon lastSyncedTime={lastSyncedTime} />
+                        </span>
+                    )}
+                    {formattedRepositoryStarCount && (
+                        <span className="d-flex align-items-center">
+                            <SearchResultStar aria-label={`${repoStars} stars`} />
+                            <span aria-hidden={true}>{formattedRepositoryStarCount}</span>
+                        </span>
                     )}
                     {formattedRepositoryStarCount && (
                         <span className="d-flex align-items-center">

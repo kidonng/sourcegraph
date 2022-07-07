@@ -2,7 +2,7 @@ import React from 'react'
 
 import FileDocumentIcon from 'mdi-react/FileDocumentIcon'
 
-import { formatRepositoryStarCount, SearchResultStar } from '@sourcegraph/search-ui'
+import { formatRepositoryStarCount, LastSyncedIcon, SearchResultStar } from '@sourcegraph/search-ui'
 import { PathMatch } from '@sourcegraph/shared/src/search/stream'
 
 import { RepoName } from './RepoName'
@@ -12,10 +12,16 @@ import { SelectableSearchResult } from './SelectableSearchResult'
 interface Props {
     match: PathMatch
     selectedResult: null | string
+    lastSyncedTime?: string
     selectResult: (id: string) => void
 }
 
-export const PathSearchResult: React.FunctionComponent<Props> = ({ match, selectedResult, selectResult }: Props) => {
+export const PathSearchResult: React.FunctionComponent<Props> = ({
+    match,
+    selectedResult,
+    lastSyncedTime,
+    selectResult,
+}: Props) => {
     const formattedRepositoryStarCount = formatRepositoryStarCount(match.repoStars)
 
     return (
@@ -28,12 +34,15 @@ export const PathSearchResult: React.FunctionComponent<Props> = ({ match, select
                         repoName: match.repository,
                     }}
                     infoColumn={
-                        formattedRepositoryStarCount && (
-                            <>
-                                <SearchResultStar />
-                                {formattedRepositoryStarCount}
-                            </>
-                        )
+                        <>
+                            {lastSyncedTime && <LastSyncedIcon lastSyncedTime={lastSyncedTime} />}
+                            {formattedRepositoryStarCount && (
+                                <>
+                                    <SearchResultStar />
+                                    {formattedRepositoryStarCount}
+                                </>
+                            )}
+                        </>
                     }
                 >
                     <RepoName repoName={match.repository} suffix={match.path} />

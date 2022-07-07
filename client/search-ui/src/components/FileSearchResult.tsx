@@ -248,6 +248,7 @@ export const FileSearchResult: React.FunctionComponent<React.PropsWithChildren<P
                 onResultClicked: props.onSelect,
                 className: props.containerClassName,
                 resultType: result.type,
+                lastSyncedTime: result.repoLastFetched,
             }
         } else {
             const hideCount = matchCount - limitedMatchCount
@@ -270,6 +271,7 @@ export const FileSearchResult: React.FunctionComponent<React.PropsWithChildren<P
                 onResultClicked: props.onSelect,
                 className: props.containerClassName,
                 resultType: result.type,
+                lastSyncedTime: result.repoLastFetched,
             }
         }
     } else if (props.showAllMatches) {
@@ -289,6 +291,7 @@ export const FileSearchResult: React.FunctionComponent<React.PropsWithChildren<P
             onResultClicked: props.onSelect,
             className: props.containerClassName,
             resultType: result.type,
+            lastSyncedTime: result.repoLastFetched,
         }
     } else {
         const length = highlightRangesCount - collapsedHighlightRangesCount
@@ -311,6 +314,7 @@ export const FileSearchResult: React.FunctionComponent<React.PropsWithChildren<P
             onResultClicked: props.onSelect,
             className: props.containerClassName,
             resultType: result.type,
+            lastSyncedTime: result.repoLastFetched,
             as: props.as,
         }
     }

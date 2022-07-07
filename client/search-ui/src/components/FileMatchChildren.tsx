@@ -272,16 +272,9 @@ export const FileMatchChildren: React.FunctionComponent<React.PropsWithChildren<
 
     const openInNewTabProps = props.openInNewTab ? { target: '_blank', rel: 'noopener noreferrer' } : undefined
 
-    return (
+    return result.type === 'path' ? null : (
         <div className={styles.fileMatchChildren} data-testid="file-match-children">
             {result.repoLastFetched && <LastSyncedIcon lastSyncedTime={result.repoLastFetched} />}
-            {/* Path */}
-            {result.type === 'path' && (
-                <div className={styles.item} data-testid="file-match-children-item">
-                    <small>Path match</small>
-                </div>
-            )}
-
             {/* Symbols */}
             {((result.type === 'symbol' && result.symbols) || []).map(symbol => (
                 <Link
