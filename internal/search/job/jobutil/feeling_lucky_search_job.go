@@ -567,7 +567,7 @@ func (g *generatedSearchJob) MapChildren(fn job.MapFunc) job.Job {
 	return &cp
 }
 
-var rulesMaxSet = []rule{
+var rulesNarrow = []rule{
 	{
 		description: "unquote patterns",
 		transform:   transform{unquotePatterns},
@@ -582,6 +582,13 @@ var rulesMaxSet = []rule{
 	},
 }
 
+var rulesWiden = []rule{
+	{
+		description: "AND patterns together",
+		transform:   transform{unorderedPatterns},
+	},
+}
+
 type cg = *combin.CombinationGenerator
 
 // NewComboGenerator returns a generator for queries produces by a combination
@@ -592,15 +599,42 @@ type cg = *combin.CombinationGenerator
 // number of rules and interpretation. To avoid spending time on generator
 // invalid combinations, the generator prunes the initial rule set to only those
 // rules that do successively apply individually to the seed query.
-func NewComboGenerator(seed query.Basic, rules []rule) next {
-	rules = pruneRules(seed, rules)
+func NewComboGenerator(seed query.Basic, narrow []rule, widen []rule) next {
+	narrow = pruneRules(seed, narrow)
+	widen = pruneRules(seed, widen)
+
+	num := len(narrow)
 	// the iterator state `n` stores:
-	// - k, the number of rules to try and apply.
+	// - k, the size of the selection in the narrow set to apply
 	// - cg, an iterator producing the next sequence of rules for the current value of `k`.
-	var n func(k int, cg cg) next
-	n = func(k int, cg cg) next {
-		if k == 0 {
+	// - w, the index of the widen rule to apply (nil if empty)
+	var n func(k int, cg cg, w *int) next
+	n = func(k int, cg cg, w *int) next {
+		if k == 0 && w != nil && *w == len(widen) {
+			// Base case: we exhausted the set of narrow rules and
+			// we've attempted every widen rule with the sets of
+			// narrow rules.
 			return func() (*autoQuery, next) { return nil, nil }
+		}
+
+		if k == 0 && w == nil {
+			// We've exhausted the sets of narrow rules, but have
+			// not attempted to compose them with any widen rules.
+			// Compose them with widen rules by initializing w to 0.
+			fmt.Printf("num: %d\n", num)
+			cg := combin.NewCombinationGenerator(num, num)
+			w := 0
+			return n(num, cg, &w)
+		}
+
+		if k == 0 && w != nil && *w < len(widen)-1 {
+			// We've exhausted the sets of narrow rules for this
+			// index of widen rules, but we're not done yet: there
+			// are still more widen rules to try. So increment w by 1.
+			fmt.Printf("num: %d\n", num)
+			cg := combin.NewCombinationGenerator(num, num)
+			*w += 1
+			return n(num, cg, w)
 		}
 
 		return func() (*autoQuery, next) {
@@ -608,13 +642,19 @@ func NewComboGenerator(seed query.Basic, rules []rule) next {
 				var transform transform
 				var descriptions []string
 				for _, idx := range cg.Combination(nil) {
-					transform = append(transform, rules[idx].transform...)
-					descriptions = append(descriptions, rules[idx].description)
+					transform = append(transform, narrow[idx].transform...)
+					descriptions = append(descriptions, narrow[idx].description)
 				}
+
+				if w != nil {
+					// Compose narrow rules with a widen rule.
+					transform = append(transform, widen[*w].transform...)
+				}
+
 				generated := applyTransformation(seed, transform)
 				if generated == nil {
 					// Rule does not apply, go to next rule.
-					continuation := n(k, cg)
+					continuation := n(k, cg, w)
 					return continuation()
 				}
 
@@ -623,18 +663,19 @@ func NewComboGenerator(seed query.Basic, rules []rule) next {
 					query:       *generated,
 				}
 
-				return &q, n(k, cg)
+				return &q, n(k, cg, w)
 			}
 			k -= 1
-			cg = combin.NewCombinationGenerator(len(rules), k)
-			continuation := n(k, cg)
+			fmt.Printf("k: %d\n", k)
+			cg = combin.NewCombinationGenerator(len(narrow), k)
+			continuation := n(k, cg, w)
 			return continuation()
 		}
 	}
 
-	num := len(rules)
+	fmt.Printf("num: %d\n", num)
 	cg := combin.NewCombinationGenerator(num, num)
-	return n(num, cg)
+	return n(num, cg, nil)
 }
 
 // pruneRules produces a minimum set of rules that apply successfully on the seed query.

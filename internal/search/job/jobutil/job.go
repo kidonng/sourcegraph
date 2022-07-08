@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/grafana/regexp"
-	"github.com/inconshreveable/log15"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 
@@ -784,7 +783,7 @@ func toFeatures(flagSet *featureflag.FlagSet) search.Features {
 	if flagSet == nil {
 		flagSet = &featureflag.FlagSet{}
 		metricFeatureFlagUnavailable.Inc()
-		log15.Warn("search feature flags are not available")
+		//		log15.Warn("search feature flags are not available")
 	}
 
 	return search.Features{

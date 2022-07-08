@@ -173,7 +173,7 @@ func TestGeneratedSearchJob(t *testing.T) {
 func TestCombinations(t *testing.T) {
 	q, _ := query.ParseStandard(`go commit`)
 	b, _ := query.ToBasicQuery(q)
-	g := NewComboGenerator(b, rulesMaxSet)
+	g := NewComboGenerator(b, rulesNarrow, rulesWiden)
 
 	var autoQ *autoQuery
 	type want struct {
