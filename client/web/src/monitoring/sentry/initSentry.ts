@@ -28,6 +28,11 @@ export function initSentry(): void {
                 dsn: sentryDSN,
                 release: 'frontend@' + version,
                 beforeSend(event, hint) {
+                    if (process.env.NODE_ENV === 'development' && hint?.originalException) {
+                        // Log error to console in the development environment
+                        console.error(hint.originalException)
+                    }
+
                     // Use `originalException` to check if we want to ignore the error.
                     if (!hint || shouldErrorBeReported(hint.originalException)) {
                         return event
