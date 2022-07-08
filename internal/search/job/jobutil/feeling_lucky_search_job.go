@@ -7,6 +7,8 @@ import (
 
 	"github.com/go-enry/go-enry/v2"
 	"github.com/opentracing/opentracing-go/log"
+	"gonum.org/v1/gonum/stat/combin"
+
 	"github.com/sourcegraph/sourcegraph/internal/search"
 	alertobserver "github.com/sourcegraph/sourcegraph/internal/search/alert"
 	"github.com/sourcegraph/sourcegraph/internal/search/job"
@@ -549,4 +551,84 @@ func (g *generatedSearchJob) Name() string {
 
 func (g *generatedSearchJob) Tags() []log.Field {
 	return []log.Field{}
+}
+
+type simpleRule struct {
+	description string
+	transform   func(query.Basic) *query.Basic
+}
+
+var rulesMaxSet = []simpleRule{
+	{
+		description: "unquote patterns",
+		transform:   unquotePatterns,
+	},
+	{
+		description: "apply search type for pattern",
+		transform:   typePatterns,
+	},
+	{
+		description: "apply language filter for pattern",
+		transform:   langPatterns,
+	},
+}
+
+type cg = *combin.CombinationGenerator
+
+func NewComboGenerator(inputs *run.SearchInputs, seed query.Basic, rules []simpleRule) next {
+	num := len(rules)
+	var n func(k int, cg cg) next
+	n = func(k int, cg cg) next {
+		if k == 0 {
+			return func() (*autoQuery, next) { return nil, nil }
+		}
+
+		return func() (*autoQuery, next) {
+			if cg.Next() {
+				var transform transform
+				var descriptions []string
+				l := cg.Combination(nil)
+				for _, idx := range l {
+					transform = append(transform, rules[idx].transform)
+					descriptions = append(descriptions, rules[idx].description)
+				}
+				generated := applyTransformation(seed, transform)
+				if generated == nil {
+					// Rule does not apply, go to next rule.
+					continuation := n(k, cg)
+					return continuation()
+				}
+
+				q := autoQuery{
+					description: strings.Join(descriptions, " and "),
+					query:       *generated,
+				}
+
+				return &q, n(k, cg)
+			}
+			k -= 1
+			cg = combin.NewCombinationGenerator(len(rules), k)
+			continuation := n(k, cg)
+			return continuation()
+		}
+	}
+
+	cg := combin.NewCombinationGenerator(num, num)
+	return n(num, cg)
+}
+
+func printCombinations(rulesMaxSet []simpleRule) {
+	for i := len(rulesMaxSet); i > 0; i-- {
+		fmt.Printf("Set size %d\n", i)
+		gen := combin.NewCombinationGenerator(len(rulesMaxSet), i)
+		for gen.Next() {
+			fmt.Printf("\t\n")
+			l := gen.Combination(nil)
+			for _, idx := range l {
+				rule := rules[idx]
+				fmt.Printf("\t\ts%s\n", rule.description)
+			}
+		}
+
+	}
 }

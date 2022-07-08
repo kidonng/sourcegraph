@@ -170,3 +170,50 @@ func TestGeneratedSearchJob(t *testing.T) {
 	autogold.Want("1 result", autogold.Raw("test (1 result)")).Equal(t, autogold.Raw(test(1)))
 	autogold.Want("limit results", autogold.Raw("test (500+ results)")).Equal(t, autogold.Raw(test(limits.DefaultMaxSearchResultsStreaming)))
 }
+
+func TestCombinations(t *testing.T) {
+	printCombinations(rulesMaxSet)
+	inputs := &run.SearchInputs{
+		UserSettings: &schema.Settings{},
+		Protocol:     search.Streaming,
+		PatternType:  query.SearchTypeLucky,
+	}
+
+	q, _ := query.ParseStandard(`go commit`)
+	b, _ := query.ToBasicQuery(q)
+	g := NewComboGenerator(inputs, b, rulesMaxSet)
+
+	var autoQ *autoQuery
+	type want struct {
+		Description string
+		Query       string
+	}
+	generated := []want{}
+
+	for {
+		autoQ, g = g()
+		if autoQ == nil {
+			if g == nil {
+				// No job and generator is exhausted.
+				break
+			}
+			continue
+		}
+
+		generated = append(
+			generated,
+			want{
+				Description: autoQ.description,
+				Query:       query.StringHuman(autoQ.query.ToParseTree()),
+			})
+		if g == nil {
+			break
+		}
+	}
+
+	result, _ := json.MarshalIndent(generated, "", "  ")
+
+	t.Run("ok", func(t *testing.T) {
+		autogold.Equal(t, autogold.Raw(result))
+	})
+}

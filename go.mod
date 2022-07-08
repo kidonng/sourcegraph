@@ -203,6 +203,7 @@ require (
 	go.opentelemetry.io/otel/exporters/otlp/internal/retry v1.7.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.7.0 // indirect
 	go.opentelemetry.io/proto/otlp v0.16.0 // indirect
+	gonum.org/v1/gonum v0.11.0 // indirect
 )
 
 require (
