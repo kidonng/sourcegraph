@@ -250,8 +250,8 @@ export const FILTERS: Record<NegatableFilter, NegatableFilterDefinition> &
             `${negated ? 'Exclude' : 'Include only'} Commits with messages matching a certain string`,
     },
     [FilterType.patterntype]: {
-        discreteValues: () => ['regexp', 'structural', 'literal'].map(value => ({ label: value })),
-        description: 'The pattern type (regexp, literal, structural) in use',
+        discreteValues: () => ['regexp', 'structural', 'literal', 'standard'].map(value => ({ label: value })),
+        description: 'The pattern type (standard, regexp, literal, structural) in use',
         singular: true,
     },
     [FilterType.repo]: {

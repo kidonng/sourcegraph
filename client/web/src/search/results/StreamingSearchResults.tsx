@@ -251,7 +251,7 @@ export const StreamingSearchResults: React.FunctionComponent<
     const options: StreamSearchOptions = useMemo(
         () => ({
             version: LATEST_VERSION,
-            patternType: patternType ?? SearchPatternType.literal,
+            patternType: patternType ?? SearchPatternType.standard,
             caseSensitive,
             trace,
         }),

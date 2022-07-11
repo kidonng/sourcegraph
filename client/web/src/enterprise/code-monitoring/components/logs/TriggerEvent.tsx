@@ -76,7 +76,7 @@ export const TriggerEvent: React.FunctionComponent<
                     <Timestamp date={triggerEvent.timestamp} noAbout={true} now={now} />
                     {triggerEvent.query && (
                         <Link
-                            to={`/search?${buildSearchURLQuery(triggerEvent.query, SearchPatternType.literal, false)}`}
+                            to={`/search?${buildSearchURLQuery(triggerEvent.query, SearchPatternType.standard, false)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="font-weight-normal ml-2"

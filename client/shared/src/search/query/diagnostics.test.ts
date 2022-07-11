@@ -18,13 +18,13 @@ function parseAndDiagnose(query: string, searchPattern: SearchPatternType): Retu
 describe('getDiagnostics()', () => {
     describe('empty and invalid filter values', () => {
         test('do not raise invalid filter type', () => {
-            expect(parseAndDiagnose('repos:^github.com/sourcegraph', SearchPatternType.literal)).toMatchInlineSnapshot(
+            expect(parseAndDiagnose('repos:^github.com/sourcegraph', SearchPatternType.standard)).toMatchInlineSnapshot(
                 '[]'
             )
         })
 
         test('invalid filter value', () => {
-            expect(parseAndDiagnose('case:maybe', SearchPatternType.literal)).toMatchInlineSnapshot(`
+            expect(parseAndDiagnose('case:maybe', SearchPatternType.standard)).toMatchInlineSnapshot(`
                 [
                   {
                     "severity": 8,
@@ -39,7 +39,7 @@ describe('getDiagnostics()', () => {
         })
 
         test('search query containing colon, literal pattern type, do not raise error', () => {
-            expect(parseAndDiagnose('Configuration::doStuff(...)', SearchPatternType.literal)).toMatchInlineSnapshot(
+            expect(parseAndDiagnose('Configuration::doStuff(...)', SearchPatternType.standard)).toMatchInlineSnapshot(
                 '[]'
             )
         })
@@ -87,7 +87,7 @@ describe('getDiagnostics()', () => {
 
     describe('diff and commit only filters', () => {
         test('detects invalid author/before/after/message filters', () => {
-            expect(parseAndDiagnose('author:me', SearchPatternType.literal)).toMatchInlineSnapshot(`
+            expect(parseAndDiagnose('author:me', SearchPatternType.standard)).toMatchInlineSnapshot(`
                 [
                   {
                     "severity": 8,
@@ -99,7 +99,7 @@ describe('getDiagnostics()', () => {
                   }
                 ]
             `)
-            expect(parseAndDiagnose('author:me test', SearchPatternType.literal)).toMatchInlineSnapshot(`
+            expect(parseAndDiagnose('author:me test', SearchPatternType.standard)).toMatchInlineSnapshot(`
                 [
                   {
                     "severity": 8,
@@ -112,7 +112,10 @@ describe('getDiagnostics()', () => {
                 ]
             `)
             expect(
-                parseAndDiagnose('author:me before:yesterday after:"last week" message:test', SearchPatternType.literal)
+                parseAndDiagnose(
+                    'author:me before:yesterday after:"last week" message:test',
+                    SearchPatternType.standard
+                )
             ).toMatchInlineSnapshot(`
                 [
                   {
@@ -149,7 +152,7 @@ describe('getDiagnostics()', () => {
                   }
                 ]
             `)
-            expect(parseAndDiagnose('until:yesterday since:"last week" m:test', SearchPatternType.literal))
+            expect(parseAndDiagnose('until:yesterday since:"last week" m:test', SearchPatternType.standard))
                 .toMatchInlineSnapshot(`
                 [
                   {
@@ -184,7 +187,7 @@ describe('getDiagnostics()', () => {
             expect(
                 parseAndDiagnose(
                     'author:me before:yesterday after:"last week" message:test type:diff',
-                    SearchPatternType.literal
+                    SearchPatternType.standard
                 )
             ).toMatchInlineSnapshot('[]')
         })
@@ -193,7 +196,7 @@ describe('getDiagnostics()', () => {
             expect(
                 parseAndDiagnose(
                     'author:me before:yesterday after:"last week" message:test type:diff',
-                    SearchPatternType.literal
+                    SearchPatternType.standard
                 )
             ).toMatchInlineSnapshot('[]')
         })
@@ -201,7 +204,7 @@ describe('getDiagnostics()', () => {
 
     describe('repo and rev filters', () => {
         test('detects rev without repo filter', () => {
-            expect(parseAndDiagnose('rev:main test', SearchPatternType.literal)).toMatchInlineSnapshot(`
+            expect(parseAndDiagnose('rev:main test', SearchPatternType.standard)).toMatchInlineSnapshot(`
                 [
                   {
                     "severity": 8,
@@ -213,7 +216,7 @@ describe('getDiagnostics()', () => {
                   }
                 ]
             `)
-            expect(parseAndDiagnose('revision:main test', SearchPatternType.literal)).toMatchInlineSnapshot(`
+            expect(parseAndDiagnose('revision:main test', SearchPatternType.standard)).toMatchInlineSnapshot(`
                 [
                   {
                     "severity": 8,
@@ -228,7 +231,7 @@ describe('getDiagnostics()', () => {
         })
 
         test('detects rev with repo+rev tag filter', () => {
-            expect(parseAndDiagnose('rev:main repo:test@dev test', SearchPatternType.literal)).toMatchInlineSnapshot(`
+            expect(parseAndDiagnose('rev:main repo:test@dev test', SearchPatternType.standard)).toMatchInlineSnapshot(`
                 [
                   {
                     "severity": 8,
@@ -248,7 +251,7 @@ describe('getDiagnostics()', () => {
                   }
                 ]
             `)
-            expect(parseAndDiagnose('rev:main r:test@dev test', SearchPatternType.literal)).toMatchInlineSnapshot(`
+            expect(parseAndDiagnose('rev:main r:test@dev test', SearchPatternType.standard)).toMatchInlineSnapshot(`
                 [
                   {
                     "severity": 8,
@@ -271,7 +274,7 @@ describe('getDiagnostics()', () => {
         })
 
         test('detects rev with empty repo filter', () => {
-            expect(parseAndDiagnose('rev:main repo: test', SearchPatternType.literal)).toMatchInlineSnapshot(`
+            expect(parseAndDiagnose('rev:main repo: test', SearchPatternType.standard)).toMatchInlineSnapshot(`
                 [
                   {
                     "severity": 4,
@@ -299,7 +302,7 @@ describe('getDiagnostics()', () => {
                   }
                 ]
             `)
-            expect(parseAndDiagnose('rev:main repo:', SearchPatternType.literal)).toMatchInlineSnapshot(`
+            expect(parseAndDiagnose('rev:main repo:', SearchPatternType.standard)).toMatchInlineSnapshot(`
                 [
                   {
                     "severity": 8,
@@ -322,7 +325,7 @@ describe('getDiagnostics()', () => {
         })
 
         test('accepts rev filter if valid repo filter is present', () => {
-            expect(parseAndDiagnose('repo:test rev:main repo: -repo:main@dev test', SearchPatternType.literal))
+            expect(parseAndDiagnose('repo:test rev:main repo: -repo:main@dev test', SearchPatternType.standard))
                 .toMatchInlineSnapshot(`
                 [
                   {
@@ -352,7 +355,7 @@ describe('getDiagnostics()', () => {
                   }
                 ]
             `)
-            expect(parseAndDiagnose('type:symbol test patterntype:structural', SearchPatternType.literal))
+            expect(parseAndDiagnose('type:symbol test patterntype:structural', SearchPatternType.standard))
                 .toMatchInlineSnapshot(`
                 [
                   {
@@ -369,7 +372,7 @@ describe('getDiagnostics()', () => {
 
         test('accepts type: filter in non-structure search', () => {
             expect(parseAndDiagnose('type:symbol test', SearchPatternType.regexp)).toMatchInlineSnapshot('[]')
-            expect(parseAndDiagnose('type:symbol test', SearchPatternType.literal)).toMatchInlineSnapshot('[]')
+            expect(parseAndDiagnose('type:symbol test', SearchPatternType.standard)).toMatchInlineSnapshot('[]')
             // patterntype: takes presedence
             expect(
                 parseAndDiagnose('type:symbol test patterntype:literal', SearchPatternType.structural)
@@ -379,7 +382,7 @@ describe('getDiagnostics()', () => {
 
     describe('removed repogroup: filter', () => {
         test('detects repogroup filter and aliased version', () => {
-            expect(parseAndDiagnose('repogroup:g1 g:g2', SearchPatternType.literal)).toMatchInlineSnapshot(
+            expect(parseAndDiagnose('repogroup:g1 g:g2', SearchPatternType.standard)).toMatchInlineSnapshot(
                 `
                 [
                   {

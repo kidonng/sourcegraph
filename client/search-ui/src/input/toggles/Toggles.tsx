@@ -105,14 +105,14 @@ export const Toggles: React.FunctionComponent<React.PropsWithChildren<TogglesPro
 
     const toggleRegexp = useCallback((): void => {
         const newPatternType =
-            patternType !== SearchPatternType.regexp ? SearchPatternType.regexp : SearchPatternType.literal
+            patternType !== SearchPatternType.regexp ? SearchPatternType.regexp : SearchPatternType.standard
 
         setPatternType(newPatternType)
         submitOnToggle({ newPatternType })
     }, [patternType, setPatternType, submitOnToggle])
 
     const toggleStructuralSearch = useCallback((): void => {
-        const defaultPatternType = defaultPatternTypeValue || SearchPatternType.literal
+        const defaultPatternType = defaultPatternTypeValue || SearchPatternType.standard
 
         const newPatternType: SearchPatternType =
             patternType !== SearchPatternType.structural ? SearchPatternType.structural : defaultPatternType
@@ -123,7 +123,7 @@ export const Toggles: React.FunctionComponent<React.PropsWithChildren<TogglesPro
 
     const toggleExpertMode = useCallback((): void => {
         const newPatternType =
-            patternType === SearchPatternType.lucky ? SearchPatternType.literal : SearchPatternType.lucky
+            patternType === SearchPatternType.lucky ? SearchPatternType.standard : SearchPatternType.lucky
 
         setPatternType(newPatternType)
         submitOnToggle({ newPatternType })

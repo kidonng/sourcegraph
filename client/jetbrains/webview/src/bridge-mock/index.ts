@@ -22,7 +22,7 @@ let savedSearch: Search = savedSearchFromLocalStorage
     : {
           query: 'r:github.com/sourcegraph/sourcegraph jetbrains',
           caseSensitive: false,
-          patternType: SearchPatternType.literal,
+          patternType: SearchPatternType.standard,
           selectedSearchContextSpec: 'global',
       }
 let previewContent: PreviewRequest['arguments'] | null = null
