@@ -326,8 +326,18 @@ func (c *Dashboard) renderRules() (*promRulesFile, error) {
 					}
 
 					// The alertQuery must contribute a query that returns true when it should be firing.
-					alertQuery := fmt.Sprintf("%s((%s) %s %v)",
-						a.aggregator, o.Query, a.comparator, a.threshold)
+					var alertQuery string
+					if o.AlertQuery != "" {
+						query := o.AlertQuery
+						if a.lookbackWindow > 0 {
+							query = fmt.Sprintf(query, a.lookbackWindow)
+						}
+						alertQuery = fmt.Sprintf("%s((%s) %s %v)",
+							a.aggregator, query, a.comparator, a.threshold)
+					} else {
+						alertQuery = fmt.Sprintf("%s((%s) %s %v)",
+							a.aggregator, o.Query, a.comparator, a.threshold)
+					}
 
 					// If the data must exist, we alert if the query returns no value as well
 					if o.DataMustExist {
@@ -692,8 +702,14 @@ type Observable struct {
 	// Owner indicates the team that owns this Observable (including its alerts and maintainence).
 	Owner ObservableOwner
 
-	// Query is the actual Prometheus query that should be observed.
+	// Query is the actual Prometheus query that should be observed. If `AlertQuery` is not defined,
+	// this will be used as the alert query.
 	Query string
+
+	// AlertQuery is Prometheus query (without aggregate and threshold) that should be used as the
+	// alert query instead of the query used for the panel visualization. Useful if you need to perform
+	// additional
+	AlertQuery string
 
 	// DataMustExist indicates if the query must return data.
 	//
@@ -893,10 +909,14 @@ type ObservableAlertDefinition struct {
 	// See https://github.com/sourcegraph/sourcegraph/issues/11571#issuecomment-654571953,
 	// https://github.com/sourcegraph/sourcegraph/issues/17599, and related pull requests.
 	aggregator Aggregator
-	// Comparator sets how a metric should be compared against a threshold
+	// Comparator sets how a metric should be compared against a threshold.
 	comparator string
-	// Threshold sets the value to be compared against
+	// Threshold sets the value to be compared against.
 	threshold float64
+	// when using <aggregation>_over_time queries to augment the alert query, lookbackWindow
+	// determines the lookback range for the subquery. Location in AlertQuery must be specified
+	// with %%[1]s.
+	lookbackWindow time.Duration
 }
 
 // GreaterOrEqual indicates the alert should fire when greater or equal the given value.
@@ -939,6 +959,11 @@ func (a *ObservableAlertDefinition) Less(f float64) *ObservableAlertDefinition {
 // considered firing. Defaults to 0s (immediately alerts when threshold is exceeded).
 func (a *ObservableAlertDefinition) For(d time.Duration) *ObservableAlertDefinition {
 	a.duration = d
+	return a
+}
+
+func (a *ObservableAlertDefinition) LookbackWindow(d time.Duration) *ObservableAlertDefinition {
+	a.lookbackWindow = d
 	return a
 }
 

@@ -296,10 +296,16 @@ func (codeIntelligence) NewExecutorProcessorGroup(containerName string) monitori
 		},
 
 		SharedObservationGroupOptions: SharedObservationGroupOptions{
-			Total:     NoAlertsOption("none"),
-			Duration:  NoAlertsOption("none"),
-			Errors:    NoAlertsOption("none"),
-			ErrorRate: NoAlertsOption("none"),
+			Total:    NoAlertsOption("none"),
+			Duration: NoAlertsOption("none"),
+			Errors:   NoAlertsOption("none"),
+			ErrorRate: CriticalOption(
+				monitoring.Alert().For(time.Hour).GreaterOrEqual(100).LookbackWindow(time.Hour*5), `
+				- Determine the cause of failure from the auto-indexing job logs in the site-admin page.
+				- This alert fires if all executor jobs have been failing for the past hour. The alert will continue for up
+				to 5 hours until the error rate is no longer 100%, even if there are no running jobs in that time, as the
+				problem is not know to be resolved until jobs start succeeding again.
+			`),
 		},
 		Handlers: NoAlertsOption("none"),
 	})
