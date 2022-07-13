@@ -22,14 +22,13 @@ export const BatchChangeChangesetsHeader: React.FunctionComponent<
                 <Input
                     aria-label="Select all changesets"
                     type="checkbox"
-                    className="ml-2"
                     checked={allSelected}
                     onChange={toggleSelectAll}
                     disabled={!!disabled}
                 />
             </Tooltip>
         )}
-        <H5 as={H3} className="p-2 d-none d-md-block text-uppercase text-center text-nowrap">
+        <H5 as={H3} className="p-2 pl-3 d-none d-md-block text-uppercase text-center text-nowrap">
             Status
         </H5>
         <H5 as={H3} className="p-2 d-none d-md-block text-uppercase text-nowrap">

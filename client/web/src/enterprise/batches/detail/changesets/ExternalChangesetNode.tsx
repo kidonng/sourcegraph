@@ -86,25 +86,23 @@ export const ExternalChangesetNode: React.FunctionComponent<React.PropsWithChild
         <>
             <Button
                 variant="icon"
-                className="test-batches-expand-changeset d-none d-sm-block"
+                className="test-batches-expand-changeset d-none d-sm-block mr-auto"
                 aria-label={isExpanded ? 'Collapse section' : 'Expand section'}
                 onClick={toggleIsExpanded}
             >
                 <Icon aria-hidden={true} svgPath={isExpanded ? mdiChevronDown : mdiChevronRight} />
             </Button>
             {selectable ? (
-                <div className="p-2">
-                    <Tooltip content={tooltipLabel}>
-                        <Input
-                            aria-label="Select changeset"
-                            id={`select-changeset-${node.id}`}
-                            type="checkbox"
-                            checked={selected}
-                            onChange={toggleSelected}
-                            disabled={!viewerCanAdminister}
-                        />
-                    </Tooltip>
-                </div>
+                <Tooltip content={tooltipLabel}>
+                    <Input
+                        aria-label="Select changeset"
+                        id={`select-changeset-${node.id}`}
+                        type="checkbox"
+                        checked={selected}
+                        onChange={toggleSelected}
+                        disabled={!viewerCanAdminister}
+                    />
+                </Tooltip>
             ) : (
                 // 0-width empty element to allow us to keep the identical grid template of the parent
                 // list, regardless of whether or not the nodes have the checkbox selector
@@ -115,7 +113,7 @@ export const ExternalChangesetNode: React.FunctionComponent<React.PropsWithChild
                 state={node.state}
                 className={classNames(
                     styles.externalChangesetNodeState,
-                    'p-2 align-self-stretch text-muted d-block d-sm-flex'
+                    'p-2 pl-3 align-self-stretch text-muted d-block d-sm-flex'
                 )}
             />
             <ExternalChangesetInfoCell

@@ -20,21 +20,19 @@ export const HiddenExternalChangesetNode: React.FunctionComponent<
 > = ({ node }) => (
     <>
         <span className="d-none d-sm-block" />
-        <div className="p-2">
-            <Tooltip content="You do not have permission to perform a bulk operation on this changeset">
-                <Input
-                    aria-label="You do not have permission to perform a bulk operation on this changeset"
-                    id={`select-changeset-${node.id}`}
-                    type="checkbox"
-                    checked={false}
-                    disabled={true}
-                />
-            </Tooltip>
-        </div>
+        <Tooltip content="You do not have permission to perform a bulk operation on this changeset">
+            <Input
+                aria-label="You do not have permission to perform a bulk operation on this changeset"
+                id={`select-changeset-${node.id}`}
+                type="checkbox"
+                checked={false}
+                disabled={true}
+            />
+        </Tooltip>
         <ChangesetStatusCell
             id={node.id}
             state={node.state}
-            className={classNames(styles.hiddenExternalChangesetNodeStatus, 'p-2 text-muted d-block d-sm-flex')}
+            className={classNames(styles.hiddenExternalChangesetNodeStatus, 'p-2 pl-3 text-muted d-block d-sm-flex')}
         />
         <HiddenExternalChangesetInfoCell
             node={node}
