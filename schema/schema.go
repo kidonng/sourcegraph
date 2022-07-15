@@ -1775,6 +1775,8 @@ type SettingsExperimentalFeatures struct {
 	ShowSearchNotebook *bool `json:"showSearchNotebook,omitempty"`
 	// TreeSitterEnabled description: DEPRECATED: Enables tree sitter for enabled filetypes.
 	TreeSitterEnabled *bool `json:"treeSitterEnabled,omitempty"`
+	// CodeInsightsCompute description: Enables Compute powered Code Insights.
+	CodeInsightsCompute *bool `json:"codeInsightsCompute,omitempty"`
 }
 
 // SiteConfiguration description: Configuration for a Sourcegraph site.
