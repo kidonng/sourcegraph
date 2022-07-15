@@ -39,7 +39,7 @@ describe('Core functionality regression test suite', () => {
     let resourceManager: TestResourceManager
     let screenshots: ScreenshotVerifier
     before(async () => {
-        ; ({ driver, gqlClient, resourceManager } = await getTestTools(config))
+        ;({ driver, gqlClient, resourceManager } = await getTestTools(config))
         resourceManager.add(
             'User',
             testUsername,
@@ -212,8 +212,6 @@ describe('Core functionality regression test suite', () => {
         ).rejects.toThrowError('401 Unauthorized')
     })
 
-
-
     // TODO: Disabled because it's flaky. https://github.com/sourcegraph/sourcegraph/issues/23049
     // test('2.5 Quicklinks: add a quicklink, test that it appears on the front page and works.', async () => {
     //     const quicklinkInfo = {
@@ -260,7 +258,7 @@ describe('Core functionality regression test suite', () => {
     //     expect(driver.page.url()).toEqual(quicklinkInfo.url)
     // })
 
-    test("this is a fake test that will fail", async () => {
-        throw new Error("FAKE ERAWR")
+    test('this is a fake test that will fail', async () => {
+        throw new Error('FAKE ERAWR')
     })
 })

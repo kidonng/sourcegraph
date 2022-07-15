@@ -565,5 +565,9 @@ describe('Search', () => {
             ])
             await driver.assertWindowLocation('/search?q=context:global+test+type:commit&patternType=literal')
         })
+
+        test('failed seaerch test', async () => {
+            throw new Error('integration test failure')
+        })
     })
 })
