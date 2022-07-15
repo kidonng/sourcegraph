@@ -283,7 +283,7 @@ func (r *Runner) checkPrivilegedState(
 
 	if privilegedMode == NoopPrivilegedMigrations {
 		// The user has enabled a mode where we assume the contents of the privileged migrations
-		// have already been applied (or, in the down direction, will be after this operation).
+		// have already been applied, or in the down direction will be applied after this operation.
 
 		if privilegedHash := hashDefinitionIDs(privilegedDefinitionIDs); privilegedHash != expectedPrivilegedHash && up {
 			// In order to ensure the user reads the following instructions for this operation, we
